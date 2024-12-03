@@ -1,1 +1,98 @@
-eee
+import time
+import random
+
+# --- Simulating Robot Motion ---
+
+class Robot:
+    def __init__(self):
+        self.position = (0, 0)  # Starting at the origin (0,0)
+        self.orientation = 0    # 0 degrees, facing 'up'
+        self.speed = 1.0        # Movement speed (can be adjusted)
+        
+    def move_forward(self):
+        """Move the robot forward based on its current orientation."""
+        dx, dy = 0, 0
+        if self.orientation == 0:  # Facing up
+            dy = self.speed
+        elif self.orientation == 90:  # Facing right
+            dx = self.speed
+        elif self.orientation == 180:  # Facing down
+            dy = -self.speed
+        elif self.orientation == 270:  # Facing left
+            dx = -self.speed
+        
+        self.position = (self.position[0] + dx, self.position[1] + dy)
+        print(f"Moved to {self.position}")
+    
+    def turn_left(self):
+        """Turn robot left (90 degrees counterclockwise)."""
+        self.orientation = (self.orientation + 270) % 360
+        print(f"Turned left. Now facing {self.orientation}°")
+    
+    def turn_right(self):
+        """Turn robot right (90 degrees clockwise)."""
+        self.orientation = (self.orientation + 90) % 360
+        print(f"Turned right. Now facing {self.orientation}°")
+        
+    def stop(self):
+        """Stop the robot's movement."""
+        print("Robot stopped.")
+        self.speed = 0
+
+
+# --- Simulating Ultrasonic Sensor ---
+
+class UltrasonicSensor:
+    def __init__(self, threshold=1.0):
+        self.threshold = threshold  # Distance threshold to detect obstacles (in meters)
+        
+    def get_distance(self):
+        """Simulate getting a distance reading from the ultrasonic sensor."""
+        # Randomly simulate distance between 0 and 3 meters
+        distance = random.uniform(0, 3)
+        print(f"Sensor reading: {distance:.2f} meters")
+        return distance
+    
+    def detect_obstacle(self):
+        """Returns True if an obstacle is detected within the threshold."""
+        distance = self.get_distance()
+        return distance < self.threshold
+
+
+# --- Robot Decision-Making & Control ---
+
+class AutonomousRobot:
+    def __init__(self):
+        self.robot = Robot()
+        self.sensor = UltrasonicSensor(threshold=1.0)  # Obstacle detection threshold = 1 meter
+        
+    def navigate(self):
+        """Navigate through the environment avoiding obstacles."""
+        while True:
+            # Move forward if no obstacle is detected
+            if not self.sensor.detect_obstacle():
+                self.robot.move_forward()
+            else:
+                # Stop and turn if obstacle is detected
+                print("Obstacle detected! Stopping and turning...")
+                self.robot.stop()
+                time.sleep(1)  # Pause for a moment before turning
+                self.robot.turn_left()
+                time.sleep(1)
+                self.robot.move_forward()  # Move after turning
+                
+            # Simulate a delay before the next movement
+            time.sleep(0.5)
+
+
+# --- Main Execution ---
+
+if __name__ == "__main__":
+    print("Starting Autonomous Robot Simulation")
+    
+    # Initialize the robot and its components
+    robot_system = AutonomousRobot()
+    
+    # Start the robot's navigation process
+    robot_system.navigate()
+ 
